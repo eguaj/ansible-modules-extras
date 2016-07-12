@@ -96,7 +96,7 @@ def ext_exists(cursor, ext):
 
 def ext_delete(cursor, ext):
     if ext_exists(cursor, ext):
-        query = "DROP EXTENSION \"%s\"" % ext
+        query = "DROP EXTENSION %s" % pg_quote_identifier(ext)
         cursor.execute(query)
         return True
     else:
@@ -104,7 +104,7 @@ def ext_delete(cursor, ext):
 
 def ext_create(cursor, ext):
     if not ext_exists(cursor, ext):
-        query = 'CREATE EXTENSION "%s"' % ext
+        query = 'CREATE EXTENSION %s' % pg_quote_identifier(ext)
         cursor.execute(query)
         return True
     else:
@@ -183,5 +183,6 @@ def main():
 
 # import module snippets
 from ansible.module_utils.basic import *
+from ansible.module_utils.database import pg_quote_identifier
 main()
 

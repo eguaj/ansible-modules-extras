@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+
 DOCUMENTATION = '''
 ---
 module: postgresql_lang
@@ -159,9 +160,9 @@ def lang_altertrust(cursor, lang, trust):
 def lang_add(cursor, lang, trust):
     """Adds language for db"""
     if trust:
-        query = 'CREATE TRUSTED LANGUAGE "%s"' % lang
+        query = 'CREATE TRUSTED LANGUAGE %s' % pg_quote_identifier(lang)
     else:
-        query = 'CREATE LANGUAGE "%s"' % lang
+        query = 'CREATE LANGUAGE %s' % pg_quote_identifier(lang)
     cursor.execute(query)
     return True
 
@@ -170,9 +171,9 @@ def lang_drop(cursor, lang, cascade):
     cursor.execute("SAVEPOINT ansible_pgsql_lang_drop")
     try:
         if cascade:
-            cursor.execute("DROP LANGUAGE \"%s\" CASCADE" % lang)
+            cursor.execute("DROP LANGUAGE %s CASCADE" % pg_quote_identifier(lang))
         else:
-            cursor.execute("DROP LANGUAGE \"%s\"" % lang)
+            cursor.execute("DROP LANGUAGE %s" % pg_quote_identifier(lang))
     except:
         cursor.execute("ROLLBACK TO SAVEPOINT ansible_pgsql_lang_drop")
         cursor.execute("RELEASE SAVEPOINT ansible_pgsql_lang_drop")
@@ -267,4 +268,5 @@ def main():
 
 # import module snippets
 from ansible.module_utils.basic import *
+from ansible.module_utils.database import pg_quote_identifier
 main()
